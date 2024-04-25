@@ -57,7 +57,7 @@ def _random_name(code: str) -> str:
     return f"{code}_{datecode}_{name}_{usercode}"
 
 
-def _create_files(folder: Path, code: str):
+def _create_files(folder: Path, code: str) -> None:
     """Create random files in the folder and in '__old'."""
     n_files = random.randint(0, 4)
     if n_files == 0:
@@ -71,7 +71,7 @@ def _create_files(folder: Path, code: str):
             (folder / "__old" / fname).with_suffix(".txt").write_text("101")
 
 
-def _create_tree(folder: Path, code: str, depth: int):
+def _create_tree(folder: Path, code: str, depth: int) -> None:
     """Create a directory tree."""
     _create_files(folder, code)
     if depth == _MAX_TREE_DEPTH:
