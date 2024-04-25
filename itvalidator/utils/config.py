@@ -12,10 +12,11 @@ from packaging.requirements import Requirement
 from ._checks import check_type
 
 if TYPE_CHECKING:
-    from typing import IO, Callable, Optional
+    from collections.abc import Callable
+    from typing import IO
 
 
-def sys_info(fid: Optional[IO] = None, developer: bool = False):
+def sys_info(fid: IO | None = None, developer: bool = False):
     """Print the system information for debugging.
 
     Parameters
@@ -95,17 +96,6 @@ def _list_dependencies_info(
             output += f" ({str(dep.specifier)})"
         output += ":"
         output = output.ljust(ljust) + version_
-
-        # handle special dependencies with backends, C dep, ..
-        if dep.name in ("matplotlib", "seaborn") and version_ != "Not found.":
-            try:
-                from matplotlib import pyplot as plt
-
-                backend = plt.get_backend()
-            except Exception:
-                backend = "Not found"
-
-            output += f" (backend: {backend})"
         out(output + "\n")
 
     if len(not_found) != 0:

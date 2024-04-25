@@ -10,7 +10,8 @@ import sys
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Any, Callable
+    from typing import Any
+    from collections.abc import Callable
 
 # -- Documentation dictionary ----------------------------------------------------------
 docdict: dict[str, str] = dict()
