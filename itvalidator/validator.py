@@ -106,6 +106,7 @@ def _validate_folder_content(
     violations : dict
         Dictionary of violations found in the folder and its content.
     """
+    assert folder.is_dir()  # sanity-check
     folders = []  # list folders to validate last code letter consecutiveness
     for elt in folder.iterdir():
         if elt.is_dir() and elt.name != "__old":
@@ -139,6 +140,7 @@ def _validate_folder_name(folder: Path, validate_parent_code: bool = True) -> in
     validate_parent_code : bool
         If False, ignore the code validation based on the parent folder.
     """
+    assert folder.is_dir()  # sanity-check
     if not folder.name.startswith("_"):
         return 102
     try:
@@ -176,14 +178,15 @@ def _validate_fname(fname: Path) -> int:
         The error code corresponding to the validation error. 0 is returned if no error
         is found.
     """
-    try:
-        folder_code, _ = _parse_folder_name(fname.parent.name)
-    except Exception:
-        return 301
+    assert fname.is_file()  # sanity-check
     try:
         fname_code, date, name, usercode = _parse_file_stem(fname.stem)
     except Exception:
         return 300
+    try:
+        folder_code, _ = _parse_folder_name(fname.parent.name)
+    except Exception:
+        return 301
     if folder_code != fname_code:
         return 1
     if any(elt in name for elt in _FORBIDDEN_STEM_CHARACTERS):
