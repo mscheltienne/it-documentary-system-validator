@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import string
 from datetime import datetime
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from .config import _FORBIDDEN_STEM_CHARACTERS, _USERCODE_LENGTH
@@ -10,7 +11,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
-def _validate_folder(folder: Path, violations: dict[Path, int]):
+def _validate_folder(folder: Path, violations: dict[Path, int]) -> dict[Path, int]:
     """Validate a folder and its content.
 
     This function recursively calls itself on subfolders.
@@ -41,9 +42,14 @@ def _validate_folder(folder: Path, violations: dict[Path, int]):
             err_code = _validate_fname(elt)
             if err_code != 0:
                 violations[elt] = err_code
-    folder_letters = sorted([_parse_folder_name(elt.name)[0][-1] for elt in folders])
-    if "".join(folder_letters) != string.ascii_lowercase[: len(folder_letters)]:
-        violations[folder] = 200
+    try:
+        folder_letters = sorted(
+            [_parse_folder_name(elt.name)[0][-1] for elt in folders]
+        )
+        if "".join(folder_letters) != string.ascii_lowercase[: len(folder_letters)]:
+            violations[folder] = 200
+    except Exception:
+        violations[folder] = 320
     return violations
 
 
@@ -57,8 +63,14 @@ def _validate_folder_name(folder: Path) -> int:
     context : list of Path
         List of all folders in the same context (parent folder).
     """
-    folder_parent_code, _ = _parse_folder_name(folder.parent.name)
-    code, name = _parse_folder_name(folder.name)
+    try:
+        folder_parent_code, _ = _parse_folder_name(folder.parent.name)
+    except Exception:
+        return 311
+    try:
+        code, name = _parse_folder_name(folder.name)
+    except Exception:
+        return 310
     if folder_parent_code != code[:-1]:
         return 100
     code_letter = code[-1]
@@ -83,7 +95,10 @@ def _validate_fname(fname: Path) -> int:
         The error code corresponding to the validation error. 0 is returned if no error
         is found.
     """
-    folder_code, _ = _parse_folder_name(fname.parent.name)
+    try:
+        folder_code, _ = _parse_folder_name(fname.parent.name)
+    except Exception:
+        return 301
     try:
         fname_code, date, name, usercode = _parse_file_stem(fname.stem)
     except Exception:

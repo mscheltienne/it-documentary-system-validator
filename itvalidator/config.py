@@ -17,4 +17,8 @@ ERRORS_CODES: dict[int, str] = {
     200: "Subfolders code last letters are not consecutive lowercase letters.",
     # parser failures
     300: "File name could not be parsed.",
+    301: "File name could not be validated because parent folder is invalid.",
+    310: "Folder name could not be parsed.",
+    311: "Folder name could not be validated because parent folder is invalid.",
+    320: "Subfolders code last letters could not be validated because at least one subfolder is invalid.",  # noqa: E501
 }
