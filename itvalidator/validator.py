@@ -6,9 +6,28 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from .config import _FORBIDDEN_STEM_CHARACTERS, _USERCODE_LENGTH
+from .utils._checks import ensure_path
 
 if TYPE_CHECKING:
     from pathlib import Path
+
+
+def validate_folder(folder: Path | str) -> dict[Path, int]:
+    """Validate a folder and its content.
+
+    Parameters
+    ----------
+    folder : Path | str
+        Path to the folder to validate.
+
+    Returns
+    -------
+    violations : dict
+        Dictionary of violations found in the folder and its content.
+    """
+    folder = ensure_path(folder, must_exist=True)
+    violations = _validate_folder(folder, dict())
+    return violations
 
 
 def _validate_folder(folder: Path, violations: dict[Path, int]) -> dict[Path, int]:
@@ -32,12 +51,12 @@ def _validate_folder(folder: Path, violations: dict[Path, int]) -> dict[Path, in
     violations = dict() if violations is None else violations
     folders = []  # list folders to validate last code letter consecutiveness
     for elt in folder.iterdir():
-        if elt.is_dir() and elt != "__old":
+        if elt.is_dir() and elt.name != "__old":
             folders.append(elt)
             err_code = _validate_folder_name(elt)
             if err_code != 0:
                 violations[elt] = err_code
-            _validate_folder(folder, violations)
+            _validate_folder(elt, violations)
         if elt.is_file():
             err_code = _validate_fname(elt)
             if err_code != 0:

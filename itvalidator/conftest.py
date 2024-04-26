@@ -81,7 +81,7 @@ def _random_name() -> str:
 
 def _random_fname_stem(code: str) -> str:
     """Create a random file name stem."""
-    year = random.randint(19, 25)
+    year = random.randint(19, 23)
     month = random.randint(1, 12)
     day = random.randint(1, 28)
     datecode = f"{year:02d}{month:02d}{day:02d}"
