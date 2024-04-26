@@ -1,26 +1,57 @@
 from __future__ import annotations
 
+import string
+from datetime import datetime
 from typing import TYPE_CHECKING
 
 from .config import _FORBIDDEN_STEM_CHARACTERS, _USERCODE_LENGTH
-from .utils._checks import check_type, ensure_path
 
 if TYPE_CHECKING:
     from pathlib import Path
 
 
-def validate_folder(folder: str | Path, include_old: bool):
-    """Validate the folder and its subfolders.
+def _validate_folder(folder: Path):
+    """Validate a folder and its content.
+
+    This function recursively calls itself on subfolders.
 
     Parameters
     ----------
-    folder : str | Path
-        Folder to validate. The folder and its subfolder will be checked.
-    include_old : bool
-        If True, the archive '__old' folder will be included in the validation.
+    folder : Path
+        Full path to the folder to validate.
     """
-    folder = ensure_path(folder, must_exist=True)
-    check_type(include_old, (bool,), "include_old")
+    folders = []  # list folders to validate last code letter consecutiveness
+    for elt in folder.iterdir():
+        if elt.is_dir() and elt != "__old":
+            folders.append(elt)
+            _validate_folder_name(elt)
+            _validate_folder(folder)
+        if elt.is_file():
+            _validate_fname(elt)
+    folder_letters = sorted([_parse_folder_name(elt.name)[0][-1] for elt in folders])
+    if "".join(folder_letters) != string.ascii_lowercase[: len(folder_letters)]:
+        return 103
+
+
+def _validate_folder_name(folder: Path) -> int:
+    """Validate a folder name.
+
+    Parameters
+    ----------
+    folder : Path
+        Full path to the folder name to validate.
+    context : list of Path
+        List of all folders in the same context (parent folder).
+    """
+    folder_parent_code, _ = _parse_folder_name(folder.parent.name)
+    code, name = _parse_folder_name(folder.name)
+    if folder_parent_code != code[:-1]:
+        return 100
+    code_letter = code[-1]
+    if code_letter not in string.ascii_lowercase:
+        return 101
+    if any(elt in name for elt in _FORBIDDEN_STEM_CHARACTERS):
+        return 102
 
 
 def _validate_fname(fname: Path) -> int:
@@ -38,15 +69,24 @@ def _validate_fname(fname: Path) -> int:
         is found.
     """
     folder_code, _ = _parse_folder_name(fname.parent.name)
-    fname_code, name, usercode = _parse_file_stem(fname.stem)
+    try:
+        fname_code, date, name, usercode = _parse_file_stem(fname.stem)
+    except Exception:
+        return 200
     if folder_code != fname_code:
         return 1
     if any(elt in name for elt in _FORBIDDEN_STEM_CHARACTERS):
         return 2
-    if len(usercode) != _USERCODE_LENGTH:
+    try:
+        date = datetime.strptime(date, "%y%m%d")
+    except ValueError:
         return 3
-    if any(elt.islower() for elt in usercode):
+    if datetime.now() < date:
         return 4
+    if len(usercode) != _USERCODE_LENGTH:
+        return 5
+    if any(elt.islower() for elt in usercode):
+        return 6
     return 0
 
 
