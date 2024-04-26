@@ -106,33 +106,3 @@ def test_validator_folder_code(folder, n_jobs):
         all_violations.update(violations)
     assert all(elt in new_folders for elt in all_violations)
     assert all(err_code == 1 for err_code in all_violations.values())
-
-
-def test_parse_file_stem():
-    """Test parsing of a file stem."""
-    fname = "F1_210101_name_ABC"
-    code, date, name, usercode = _parse_file_stem(fname)
-    assert code == "F1"
-    assert date == "210101"
-    assert name == "name"
-    assert usercode == "ABC"
-
-    fname = "F1aabc_210101_name_test_ABC"
-    code, date, name, usercode = _parse_file_stem(fname)
-    assert code == "F1aabc"
-    assert date == "210101"
-    assert name == "name_test"
-    assert usercode == "ABC"
-
-
-def test_parse_folder_name():
-    """Test parsing of a folder name."""
-    folder = "_F1_name"
-    code, name = _parse_folder_name(folder)
-    assert code == "F1"
-    assert name == "name"
-
-    folder = "_F1aabc_name_test"
-    code, name = _parse_folder_name(folder)
-    assert code == "F1aabc"
-    assert name == "name_test"

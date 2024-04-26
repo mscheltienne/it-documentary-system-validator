@@ -11,9 +11,10 @@ ERRORS_CODES: dict[int, str] = {
     41: "File user code must be uppercase.",
     # folder violations
     100: "Folder code does not match parent folder code.",
-    101: "Folder code must end with a lowercase letter.",
+    101: "Folder code must end with a lowercase letter, except root folders.",
     102: "Folder code must start with a leading underscore.",
-    103: "Folder code must start with 'F'.",
+    103: "Folder code has multiple leading underscores.",
+    104: "Folder code must start with 'F'.",
     110: "Folder name stem contains invalid characters (space, '-', '.', ...).",
     # subfolder violations
     200: "Subfolders code last letters are not consecutive lowercase letters.",
