@@ -37,6 +37,17 @@ def test_validate_fname(tmp_path):
     )
     assert sorted(err) == expected
 
+    fname = tmp_path / "_F1_folder" / "_F1_220101_file_ABC.txt"
+    fname.write_text("101")
+    err = _validate_fname(fname)
+    assert sorted(err) == [3]
+
+    (tmp_path / "_F1_folder" / "_F1a_subfolder").mkdir()
+    fname = tmp_path / "_F1_folder" / "_F1a_subfolder" / "F1A_220101_file_ABC.txt"
+    fname.write_text("101")
+    err = _validate_fname(fname)
+    assert sorted(err) == [1, 2]
+
 
 def test_validate_folder_name(tmp_path):
     """Test validation of a folder name."""

@@ -5,8 +5,7 @@ ERRORS_CODES: dict[int, str] = {
     # file violations
     1: "File code does not match folder code.",
     2: "File code must end with a lowercase letter, except for root folders.",
-    3: "File code must start with a leading underscore.",
-    4: "File code has multiple leading underscores.",
+    3: "File code must not start with a leading underscore.",
     21: "File name stem contains invalid characters (space, '-', '.', ...).",
     31: "File date format is invalid, expected 'YYMMDD'.",
     32: "File date is in the future.",

@@ -59,6 +59,8 @@ def parse_file_stem(stem: str) -> tuple[str, str, str, str]:
     >>> parse_file_stem("F2b_220101_My_second_file_DEF")
     ("F2b", "220101", "My_second_file", "DEF")
     """
+    while stem.startswith("_"):
+        stem = stem.removeprefix("_")
     elts = stem.split("_")
     code = elts[0]
     date = elts[1]

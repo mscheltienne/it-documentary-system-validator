@@ -186,6 +186,13 @@ def _validate_fname(fname: Path) -> list[int]:
             error_codes.append(1)
     except Exception:
         error_codes.append(302)
+    # validate file code errors
+    if 3 <= len(fname_code):
+        code_letter = fname_code[-1]
+        if code_letter not in string.ascii_lowercase:
+            error_codes.append(2)
+    if fname.name.startswith("_"):
+        error_codes.append(3)
     # validate date format and value
     try:
         date = datetime.strptime(date, "%y%m%d")
