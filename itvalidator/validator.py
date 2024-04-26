@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
-def _validate_folder(folder: Path):
+def _validate_folder(folder: Path, violations: dict[Path, int]):
     """Validate a folder and its content.
 
     This function recursively calls itself on subfolders.
@@ -19,18 +19,32 @@ def _validate_folder(folder: Path):
     ----------
     folder : Path
         Full path to the folder to validate.
+    violations : dict
+        Dictionary of already found violation. The dictionary is modified in-place by
+        each recursive call.
+
+    Returns
+    -------
+    violations : dict
+        Dictionary of violations found in the folder and its content.
     """
+    violations = dict() if violations is None else violations
     folders = []  # list folders to validate last code letter consecutiveness
     for elt in folder.iterdir():
         if elt.is_dir() and elt != "__old":
             folders.append(elt)
-            _validate_folder_name(elt)
-            _validate_folder(folder)
+            err_code = _validate_folder_name(elt)
+            if err_code != 0:
+                violations[elt] = err_code
+            _validate_folder(folder, violations)
         if elt.is_file():
-            _validate_fname(elt)
+            err_code = _validate_fname(elt)
+            if err_code != 0:
+                violations[elt] = err_code
     folder_letters = sorted([_parse_folder_name(elt.name)[0][-1] for elt in folders])
     if "".join(folder_letters) != string.ascii_lowercase[: len(folder_letters)]:
-        return 103
+        violations[folder] = 200
+    return violations
 
 
 def _validate_folder_name(folder: Path) -> int:
@@ -51,7 +65,8 @@ def _validate_folder_name(folder: Path) -> int:
     if code_letter not in string.ascii_lowercase:
         return 101
     if any(elt in name for elt in _FORBIDDEN_STEM_CHARACTERS):
-        return 102
+        return 110
+    return 0
 
 
 def _validate_fname(fname: Path) -> int:
@@ -72,21 +87,21 @@ def _validate_fname(fname: Path) -> int:
     try:
         fname_code, date, name, usercode = _parse_file_stem(fname.stem)
     except Exception:
-        return 200
+        return 300
     if folder_code != fname_code:
         return 1
     if any(elt in name for elt in _FORBIDDEN_STEM_CHARACTERS):
-        return 2
+        return 20
     try:
         date = datetime.strptime(date, "%y%m%d")
     except ValueError:
-        return 3
+        return 30
     if datetime.now() < date:
-        return 4
+        return 31
     if len(usercode) != _USERCODE_LENGTH:
-        return 5
+        return 40
     if any(elt.islower() for elt in usercode):
-        return 6
+        return 41
     return 0
 
 
