@@ -40,19 +40,29 @@ def validate_folder(folder: Path | str, n_jobs: int = 1) -> dict[Path, int]:
     # validate folder name and file content
     err_code = _validate_folder_name(folder, validate_parent_code=False)
     violations = {folder: err_code} if err_code != 0 else dict()
+    folders = []
     for elt in folder.iterdir():
-        if elt.is_dir():
+        if elt.is_dir() and elt.name == "__old":
             continue
+        elif elt.is_dir():
+            folders.append(elt)
         err_code = _validate_fname(elt)
         if err_code != 0:
             violations[elt] = err_code
+    # validate last letter consecutiveness
+    try:
+        folder_letters = sorted(
+            [_parse_folder_name(elt.name)[0][-1] for elt in folders]
+        )
+        if "".join(folder_letters) != string.ascii_lowercase[: len(folder_letters)]:
+            violations[folder] = 200
+    except Exception:
+        violations[folder] = 320
     # validate subfolders and subfolders content
     if n_jobs == 1:
-        violations = _validate_folder_content(folder, violations)
+        for folder in folders:
+            violations = _validate_folder_content(folder, violations)
     else:
-        folders = [
-            elt for elt in folder.iterdir() if elt.is_dir() and elt.name != "__old"
-        ]
         if len(folders) < n_jobs:
             warn(
                 f"The number of requested jobs {n_jobs} is greater than the number of "
