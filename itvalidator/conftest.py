@@ -1,5 +1,6 @@
 from __future__ import annotations  # c.f. PEP 563, PEP 649
 
+import os
 import random
 import string
 from datetime import datetime, timedelta
@@ -31,10 +32,12 @@ def pytest_configure(config: Config) -> None:
     # setup logging
     logger.propagate = True
     # set random seed
-    random.seed(101)
+    seed = os.environ.get("ITVALIDATOR_RANDOM_SEED", None)
+    if seed is not None:
+        random.seed(seed)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def folder(tmp_path: Path) -> Path:
     """Create a mock documentary structure."""
     for code in "F1", "F2", "F3":

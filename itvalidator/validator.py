@@ -1,24 +1,32 @@
 from __future__ import annotations
 
+import multiprocessing as mp
 import string
 from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 from .config import _FORBIDDEN_STEM_CHARACTERS, _USERCODE_LENGTH
-from .utils._checks import ensure_path
+from .utils._checks import ensure_int, ensure_path
+from .utils.logs import warn
 
 if TYPE_CHECKING:
     from pathlib import Path
 
 
-def validate_folder(folder: Path | str) -> dict[Path, int]:
+def validate_folder(folder: Path | str, n_jobs: int = 1) -> dict[Path, int]:
     """Validate a folder and its content.
 
     Parameters
     ----------
     folder : Path | str
-        Path to the folder to validate.
+        Path to the folder to validate. The folder name should respect the documentary
+        system naming schema. Thus, it can not be called on the root of the documentary
+        system share.
+    n_jobs : int
+        Number of concurrent workers used for validation. The subfolders are split
+        between workers, thus the most workers you can have is defined by the number of
+        subfolders in the folder.
 
     Returns
     -------
@@ -26,12 +34,50 @@ def validate_folder(folder: Path | str) -> dict[Path, int]:
         Dictionary of violations found in the folder and its content.
     """
     folder = ensure_path(folder, must_exist=True)
-    violations = _validate_folder(folder, dict())
+    n_jobs = ensure_int(n_jobs)
+    if n_jobs < 1:
+        raise ValueError("The number of jobs must be an integer greater or equal to 1.")
+    # validate folder name and file content
+    err_code = _validate_folder_name(folder, validate_parent_code=False)
+    violations = {folder: err_code} if err_code != 0 else dict()
+    for elt in folder.iterdir():
+        if elt.is_dir():
+            continue
+        err_code = _validate_fname(elt)
+        if err_code != 0:
+            violations[elt] = err_code
+    # validate subfolders and subfolders content
+    if n_jobs == 1:
+        violations = _validate_folder_content(folder, violations)
+    else:
+        folders = [elt for elt in folder.iterdir() if elt.is_dir()]
+        if len(folders) < n_jobs:
+            warn(
+                f"The number of requested jobs {n_jobs} is greater than the number of "
+                f"subfolders {len(folders)}. The number of jobs will be reduced to "
+                f"{len(folders)}."
+            )
+            n_jobs = len(folders)
+        if mp.cpu_count() < n_jobs:
+            warn(
+                f"The number of requested jobs {n_jobs} is greater than the number of "
+                f"available CPUs {mp.cpu_count()}. The number of jobs will be reduced "
+                f"to {mp.cpu_count()}."
+            )
+            n_jobs = mp.cpu_count()
+        with mp.Pool(processes=n_jobs, maxtasksperchild=1) as pool:
+            results = pool.starmap(
+                _validate_folder_content, [(folder, dict()) for folder in folders]
+            )
+        for result in results:
+            violations.update(result)
     return violations
 
 
-def _validate_folder(folder: Path, violations: dict[Path, int]) -> dict[Path, int]:
-    """Validate a folder and its content.
+def _validate_folder_content(
+    folder: Path, violations: dict[Path, int]
+) -> dict[Path, int]:
+    """Validate the content of a folder.
 
     This function recursively calls itself on subfolders.
 
@@ -56,7 +102,7 @@ def _validate_folder(folder: Path, violations: dict[Path, int]) -> dict[Path, in
             err_code = _validate_folder_name(elt)
             if err_code != 0:
                 violations[elt] = err_code
-            _validate_folder(elt, violations)
+            _validate_folder_content(elt, violations)
         if elt.is_file():
             err_code = _validate_fname(elt)
             if err_code != 0:
@@ -72,29 +118,30 @@ def _validate_folder(folder: Path, violations: dict[Path, int]) -> dict[Path, in
     return violations
 
 
-def _validate_folder_name(folder: Path) -> int:
+def _validate_folder_name(folder: Path, validate_parent_code: bool = True) -> int:
     """Validate a folder name.
 
     Parameters
     ----------
     folder : Path
         Full path to the folder name to validate.
-    context : list of Path
-        List of all folders in the same context (parent folder).
+    validate_parent_code : bool
+        If False, ignore the code validation based on the parent folder.
     """
-    try:
-        folder_parent_code, _ = _parse_folder_name(folder.parent.name)
-    except Exception:
-        return 311
     try:
         code, name = _parse_folder_name(folder.name)
     except Exception:
         return 310
-    if folder_parent_code != code[:-1]:
-        return 100
-    code_letter = code[-1]
-    if code_letter not in string.ascii_lowercase:
-        return 101
+    if validate_parent_code:
+        try:
+            folder_parent_code, _ = _parse_folder_name(folder.parent.name)
+        except Exception:
+            return 311
+        if folder_parent_code != code[:-1]:
+            return 100
+        code_letter = code[-1]
+        if code_letter not in string.ascii_lowercase:
+            return 101
     if any(elt in name for elt in _FORBIDDEN_STEM_CHARACTERS):
         return 110
     return 0
