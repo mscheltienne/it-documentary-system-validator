@@ -50,7 +50,9 @@ def validate_folder(folder: Path | str, n_jobs: int = 1) -> dict[Path, int]:
     if n_jobs == 1:
         violations = _validate_folder_content(folder, violations)
     else:
-        folders = [elt for elt in folder.iterdir() if elt.is_dir()]
+        folders = [
+            elt for elt in folder.iterdir() if elt.is_dir() and elt.name != "__old"
+        ]
         if len(folders) < n_jobs:
             warn(
                 f"The number of requested jobs {n_jobs} is greater than the number of "
@@ -94,7 +96,6 @@ def _validate_folder_content(
     violations : dict
         Dictionary of violations found in the folder and its content.
     """
-    violations = dict() if violations is None else violations
     folders = []  # list folders to validate last code letter consecutiveness
     for elt in folder.iterdir():
         if elt.is_dir() and elt.name != "__old":
@@ -128,10 +129,14 @@ def _validate_folder_name(folder: Path, validate_parent_code: bool = True) -> in
     validate_parent_code : bool
         If False, ignore the code validation based on the parent folder.
     """
+    if not folder.name.startswith("_"):
+        return 102
     try:
         code, name = _parse_folder_name(folder.name)
     except Exception:
         return 310
+    if code[0] != "F":
+        return 103
     if validate_parent_code:
         try:
             folder_parent_code, _ = _parse_folder_name(folder.parent.name)
