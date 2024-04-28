@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from itvalidator.validator2 import _validate_fname, _validate_folder_name
+from fcbg_ruff.validator2 import _validate_fname, _validate_folder_name
 
 
 def test_validate_fname(tmp_path):

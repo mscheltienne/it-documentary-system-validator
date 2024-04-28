@@ -32,7 +32,7 @@ def pytest_configure(config: Config) -> None:
     # setup logging
     logger.propagate = True
     # set random seed
-    seed = os.environ.get("ITVALIDATOR_RANDOM_SEED", None)
+    seed = os.environ.get("FCBG_RUFF_RANDOM_SEED", None)
     if seed is not None:
         random.seed(seed)
 

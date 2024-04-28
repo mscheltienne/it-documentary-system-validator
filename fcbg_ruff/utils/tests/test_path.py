@@ -1,6 +1,5 @@
 import pytest
-
-from itvalidator.utils._path import walk_files, walk_folders
+from fcbg_ruff.utils._path import walk_files, walk_folders
 
 
 def test_walk_files(tmp_path):

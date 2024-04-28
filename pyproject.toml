@@ -34,23 +34,23 @@ license = {file = 'LICENSE'}
 maintainers = [
   {email = 'mathieu.scheltienne@fcbg.ch', name = 'Mathieu Scheltienne'},
 ]
-name = 'itvalidator'
+name = 'fcbg_ruff'
 readme = 'README.md'
 requires-python = '>=3.10'
 version = '0.1.0'
 
 [project.optional-dependencies]
 all = [
-  'itvalidator[build]',
-  'itvalidator[style]',
-  'itvalidator[test]',
+  'fcbg_ruff[build]',
+  'fcbg_ruff[style]',
+  'fcbg_ruff[test]',
 ]
 build = [
   'build',
   'twine',
 ]
 full = [
-  'itvalidator[all]',
+  'fcbg_ruff[all]',
 ]
 style = [
   'bibclean',
@@ -68,7 +68,7 @@ test = [
 ]
 
 [project.scripts]
-itvalidator-sys_info = 'itvalidator.commands.sys_info:run'
+fcbg_ruff-sys_info = 'fcbg_ruff.commands.sys_info:run'
 
 [project.urls]
 source = 'https://github.com/fcbg-hnp-meeg/it-documentary-system-validator'
@@ -94,9 +94,9 @@ cover_pylib = false
 omit = [
   '**/__init__.py',
   '**/conftest.py',
-  '**/itvalidator/_version.py',
-  '**/itvalidator/commands/*',
-  '**/itvalidator/utils/_fixes.py',
+  '**/fcbg_ruff/_version.py',
+  '**/fcbg_ruff/commands/*',
+  '**/fcbg_ruff/utils/_fixes.py',
   '**/tests/**',
 ]
 
@@ -112,7 +112,7 @@ add_ignore = 'D100,D104,D107'
 convention = 'numpy'
 ignore-decorators = '(copy_doc|property|.*setter|.*getter|pyqtSlot|Slot)'
 match = '^(?!__init__|test_).*\.py'
-match-dir = '^itvalidator.*'
+match-dir = '^fcbg_ruff.*'
 
 [tool.pytest.ini_options]
 addopts = '--durations 20 --junit-xml=junit-results.xml --verbose'
@@ -141,8 +141,8 @@ select = ['A', 'B', 'E', 'F', 'UP', 'W']
 include-package-data = false
 
 [tool.setuptools.packages.find]
-exclude = ['itvalidator*tests']
-include = ['itvalidator*']
+exclude = ['fcbg_ruff*tests']
+include = ['fcbg_ruff*']
 
 [tool.tomlsort]
 all = true

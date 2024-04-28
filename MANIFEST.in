@@ -1,1 +1,1 @@
-exclude itvalidator/conftest.py
+exclude fcbg_ruff/conftest.py

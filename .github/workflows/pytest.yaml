@@ -36,9 +36,9 @@ jobs:
           python -m pip install --progress-bar off --upgrade pip setuptools
           python -m pip install --progress-bar off .[test]
       - name: Display system information
-        run: itvalidator-sys_info --developer
+        run: fcbg_ruff-sys_info --developer
       - name: Run pytest
-        run: pytest itvalidator --cov=itvalidator --cov-report=xml --cov-config=pyproject.toml
+        run: pytest fcbg_ruff --cov=fcbg_ruff --cov-report=xml --cov-config=pyproject.toml
       - name: Upload to codecov
         uses: codecov/codecov-action@v4
         with:

@@ -1,4 +1,4 @@
-from itvalidator.validator._parser import parse_file_stem, parse_folder_name
+from fcbg_ruff.validator._parser import parse_file_stem, parse_folder_name
 
 
 def test_parse_file_stem():

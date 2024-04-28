@@ -5,8 +5,7 @@ from shutil import move
 from typing import TYPE_CHECKING
 
 import pytest
-
-from itvalidator.validator import _parse_file_stem, _parse_folder_name, validate_folder
+from fcbg_ruff.validator import _parse_file_stem, _parse_folder_name, validate_folder
 
 if TYPE_CHECKING:
     from collections.abc import Generator
