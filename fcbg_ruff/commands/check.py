@@ -1,4 +1,5 @@
 import argparse
+from pprint import pprint
 
 from ..check import validate_folder
 
@@ -21,4 +22,5 @@ def run() -> None:
         default=1,
     )
     args = parser.parse_args()
-    validate_folder(args.folder, args.jobs)
+    violations = validate_folder(args.folder, args.jobs)
+    pprint(violations)
