@@ -3,12 +3,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from ..utils._checks import ensure_path
+from ..utils._docs import fill_doc
 from ._regex import validate_file_name, validate_folder_name
 
 if TYPE_CHECKING:
     from pathlib import Path
 
 
+@fill_doc
 def validate_folder(folder: Path) -> dict[str, dict[Path, list[int]]]:
     """Validate a folder from the documentary system and its content recursively.
 
@@ -19,8 +21,7 @@ def validate_folder(folder: Path) -> dict[str, dict[Path, list[int]]]:
 
     Returns
     -------
-    violations : dict
-        Dictionary of primary and secondary violations found.
+    %(violations)s
     """
     folder = ensure_path(folder, must_exist=True)
     violations = {"primary": dict(), "secondary": dict()}
@@ -28,6 +29,7 @@ def validate_folder(folder: Path) -> dict[str, dict[Path, list[int]]]:
     return violations
 
 
+@fill_doc
 def _validate_folder(
     folder: Path, violations: dict[str, dict[Path, list[int]]]
 ) -> None:
@@ -37,8 +39,7 @@ def _validate_folder(
     ----------
     folder : Path
         Path to the folder to validate.
-    violations : dict
-        Dictionary of primary and secondary violations found.
+    %(violations)s
     """
     errors = validate_folder_name(folder)
     for key in ("primary", "secondary"):

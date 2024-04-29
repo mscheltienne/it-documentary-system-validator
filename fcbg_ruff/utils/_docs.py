@@ -49,6 +49,12 @@ verbose : int | str | bool | None
     verbosity is set to ``"WARNING"``. If a bool is provided, the verbosity is set to
     ``"WARNING"`` for False and to ``"INFO"`` for True."""
 
+docdict["violations"] = """
+violations : dict
+    Dictionary of primary and secondary violations found. The keys are 'primary' and
+    'secondary', both yielding a dictionary of Path objects and lists of error codes
+    associated."""
+
 # -- W ---------------------------------------------------------------------------------
 # -- X ---------------------------------------------------------------------------------
 # -- Y ---------------------------------------------------------------------------------
