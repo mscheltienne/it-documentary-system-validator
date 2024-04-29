@@ -68,6 +68,7 @@ test = [
 ]
 
 [project.scripts]
+fcbg_ruff-check = 'fcbg_ruff.commands.check:run'
 fcbg_ruff-sys_info = 'fcbg_ruff.commands.sys_info:run'
 
 [project.urls]
