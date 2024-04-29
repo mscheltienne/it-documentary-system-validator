@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import multiprocessing as mp
 import random
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
 
-from fcbg_ruff.check.validator import validate_folder
+from fcbg_ruff.check.validator import _ensure_n_jobs, validate_folder
 from fcbg_ruff.utils._path import walk_files
 
 if TYPE_CHECKING:
@@ -67,3 +68,13 @@ def test_validate_invalid_folder(folder_with_invalid_files: Path, n_jobs: int):
     assert violations["primary"][invalid_files[1]] == [11]
     assert violations["primary"][invalid_files[2]] == [3]
     assert violations["primary"][invalid_files[3]] == [21]
+
+
+def test_ensure_n_jobs():
+    """Test validation of number of jobs."""
+    with pytest.raises(ValueError, match="an integer greater or equal to 1"):
+        _ensure_n_jobs(-1, 101)
+    with pytest.warns(RuntimeWarning, match="greater than the number of subfolders"):
+        assert _ensure_n_jobs(101, 1) == 1
+    with pytest.warns(RuntimeWarning, match="greater than the number of available"):
+        assert _ensure_n_jobs(101, 10101) == mp.cpu_count()

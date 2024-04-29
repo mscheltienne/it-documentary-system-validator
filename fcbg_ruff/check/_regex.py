@@ -40,7 +40,7 @@ def validate_file_name(fname: Path) -> dict[str, list[int]]:
     # parse the file name and validate its content based on context
     try:
         fname_code, date, name, _ = parse_file_stem(fname.stem)
-    except Exception as error:  # should never happen
+    except Exception as error:  # pragma: no cover
         warn(
             f"File name stem '{fname.stem}' could not be parsed. Please report this "
             "warning on the issue tracker."
@@ -65,7 +65,7 @@ def _validate_file_name_code(
         folder_code, _ = parse_folder_name(fname.parent.name)
         if folder_code != fname_code:
             error_codes["primary"].append(11)
-    except Exception as error:
+    except Exception as error:  # pragma: no cover
         warn(
             f"Folder name '{fname.parent.name}' could not be parsed. Please report "
             "this warning on the issue tracker."
@@ -81,7 +81,7 @@ def _validate_file_name_date(
         date = datetime.strptime(date, "%y%m%d")
         if datetime.now() < date:
             error_codes["primary"].append(21)
-    except Exception as error:
+    except Exception as error:  # pragma: no cover
         warn(
             f"Date '{date}' in file name '{fname.name}' could not be parsed. Please "
             "report this warning on the issue tracker."
@@ -93,7 +93,7 @@ def _validate_name_content(
     name: str, path: Path, error_codes: dict[str, list[int]]
 ) -> None:
     """Validate the file/folder name content."""
-    if len(name) == 0:
+    if len(name) == 0:  # pragma: no cover
         warn(
             f"The {'file' if path.is_file() else 'folder'} name '{path.name}' has an "
             "empty parsed 'name' field. Please report this warning on the issue "
@@ -124,7 +124,7 @@ def validate_folder_name(folder: Path) -> dict[str, list[int]]:
     # parse the folder name and validate its content based on context
     try:
         folder_code, name = parse_folder_name(folder.name)
-    except Exception as error:  # should never happen
+    except Exception as error:  # pragma: no cover
         warn(
             f"Folder name '{folder.name}' could not be parsed. Please report this "
             "warning on the issue tracker."
@@ -154,7 +154,7 @@ def _validate_folder_name_code(
         parent_folder_code, _ = parse_folder_name(folder.parent.name)
         if parent_folder_code != folder_code[:-1]:
             error_codes["primary"].append(11)
-    except Exception as error:
+    except Exception as error:  # pragma: no cover
         warn(
             f"Folder name '{folder.parent.name}' could not be parsed. Please report "
             "this warning on the issue tracker."
