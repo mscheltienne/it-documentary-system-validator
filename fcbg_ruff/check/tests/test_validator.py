@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture(scope="function")
-def invalid_folder(folder: Path) -> tuple[Path, list[Path]]:
+def folder_with_invalid_files(folder: Path) -> tuple[Path, list[Path]]:
     """Create a mock documentary structure with invalid file names."""
     files = [elt for elt in walk_files(folder) if elt.parent.name != "__old"]
     invalid_files = random.sample(files, 4)
@@ -42,21 +42,24 @@ def invalid_folder(folder: Path) -> tuple[Path, list[Path]]:
     return folder, invalid_files
 
 
-def test_validate_folder(folder: Path):
+@pytest.mark.filterwarnings("ignore:The number of requested jobs.*:RuntimeWarning")
+@pytest.mark.parametrize("n_jobs", [1, 2])
+def test_validate_folder(folder: Path, n_jobs: int):
     """Test validation of a documentary system tree."""
     for elt in folder.iterdir():
-        violations = validate_folder(elt)
+        violations = validate_folder(elt, n_jobs=n_jobs)
         assert len(violations["primary"]) == 0
         assert len(violations["secondary"]) == 0
 
 
-def test_validate_invalid_folder(invalid_folder: Path):
+@pytest.mark.filterwarnings("ignore:The number of requested jobs.*:RuntimeWarning")
+@pytest.mark.parametrize("n_jobs", [1, 2])
+def test_validate_invalid_folder(folder_with_invalid_files: Path, n_jobs: int):
     """Test validation of an invalid documentary system tree."""
-    folder = invalid_folder[0]
-    invalid_files = invalid_folder[1]
+    folder, invalid_files = folder_with_invalid_files
     violations = {"primary": dict(), "secondary": dict()}
     for elt in folder.iterdir():
-        violations_ = validate_folder(elt)
+        violations_ = validate_folder(elt, n_jobs=n_jobs)
         for key in ("primary", "secondary"):
             violations[key].update(violations_[key])
     assert len(violations["secondary"]) == 0
