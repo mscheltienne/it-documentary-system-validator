@@ -1,4 +1,5 @@
 import argparse
+from pathlib import Path
 from pprint import pprint
 
 from ..check import validate_folder
@@ -23,4 +24,9 @@ def run() -> None:
     )
     args = parser.parse_args()
     violations = validate_folder(args.folder, args.jobs)
+    folder = Path(args.folder)
+    for key in ("primary", "secondary"):
+        violations[key] = {
+            key.relative_to(folder): value for key, value in violations[key].items()
+        }
     pprint(violations)
