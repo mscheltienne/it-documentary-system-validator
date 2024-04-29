@@ -6,13 +6,11 @@ from typing import TYPE_CHECKING
 
 from ._parser import parse_file_stem, parse_folder_name
 from .config import _FORBIDDEN_STEM_CHARACTERS, _USERCODE_LENGTH
-from .utils._docs import fill_doc
 
 if TYPE_CHECKING:
     from pathlib import Path
 
 
-@fill_doc
 def _validate_root_folder(
     folder: Path,
     primary_violations: dict[Path, list[int]],

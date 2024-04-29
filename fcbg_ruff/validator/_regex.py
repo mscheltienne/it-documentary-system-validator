@@ -4,6 +4,7 @@ import re
 from datetime import datetime
 from typing import TYPE_CHECKING
 
+from ..utils._docs import fill_doc
 from ..utils.logs import logger, warn
 from ._parser import parse_file_stem, parse_folder_name
 from .config import _FORBIDDEN_NAME_CHARACTERS, _USERCODE_LENGTH
@@ -12,11 +13,14 @@ if TYPE_CHECKING:
     from pathib import Path
 
 
-PATTERN_USERCODE_STR: str = f"[A-Z]{','.join([str(i) for i in _USERCODE_LENGTH])}"
-PATTERN_FILE_STEM = re.compile(r"F\d+[a-z]*_\d{6}_.+_" + PATTERN_USERCODE_STR)
-PATTERN_FOLDER_NAME = re.compile(r"_F\d+[a-z]*_.+")
+PATTERN_FILE_STEM = re.compile(
+    r"F\d+[a-z]*_\d{6}_[^_]{1}.*_[A-Z]{%s}"
+    % ",".join([str(i) for i in _USERCODE_LENGTH])
+)
+PATTERN_FOLDER_NAME = re.compile(r"_F\d+[a-z]*_[^_]{1}.*")
 
 
+@fill_doc
 def validate_file_name(fname: Path) -> dict[str, list[int]]:
     """Validate a file name.
 
@@ -27,13 +31,12 @@ def validate_file_name(fname: Path) -> dict[str, list[int]]:
 
     Returns
     -------
-    error_codes : dict
-        Dictionary of error codes, separated between primary and secondary errors.
+    %(error_codes)s
     """
     assert fname.is_file()  # sanity-check
     match = re.fullmatch(PATTERN_FILE_STEM, fname.stem)
     if match is None:
-        return {"primary": [1]}
+        return {"primary": [1], "secondary": []}
     # parse the file name and validate its content based on context
     try:
         fname_code, date, name, _ = parse_file_stem(fname.stem)
@@ -44,9 +47,9 @@ def validate_file_name(fname: Path) -> dict[str, list[int]]:
         )
         logger.exception(error)
     error_codes = dict(primary=[], secondary=[])
+    _validate_name_content(name, fname, error_codes)
     _validate_file_name_code(fname_code, fname, error_codes)
     _validate_file_name_date(date, fname, error_codes)
-    _validate_name_content(name, fname, error_codes)
     return error_codes
 
 
@@ -89,7 +92,7 @@ def _validate_file_name_date(
 def _validate_name_content(
     name: str, path: Path, error_codes: dict[str, list[int]]
 ) -> None:
-    """Validate the file name content."""
+    """Validate the file/folder name content."""
     if len(name) == 0:
         warn(
             f"The {'file' if path.is_file() else 'folder'} name '{path.name}' has an "
@@ -101,6 +104,7 @@ def _validate_name_content(
         error_codes["primary"].append(3)
 
 
+@fill_doc
 def validate_folder_name(folder: Path) -> dict[str, list[int]]:
     """Validate a folder name.
 
@@ -108,11 +112,15 @@ def validate_folder_name(folder: Path) -> dict[str, list[int]]:
     ----------
     folder : Path
         Full path to the folder name to validate.
+
+    Returns
+    -------
+    %(error_codes)s
     """
     assert folder.is_dir()  # sanity-check
     match = re.fullmatch(PATTERN_FOLDER_NAME, folder.name)
     if match is None:
-        return {"primary": [2]}
+        return {"primary": [2], "secondary": []}
     # parse the folder name and validate its content based on context
     try:
         folder_code, name = parse_folder_name(folder.name)
@@ -123,8 +131,8 @@ def validate_folder_name(folder: Path) -> dict[str, list[int]]:
         )
         logger.exception(error)
     error_codes = dict(primary=[], secondary=[])
-    _validate_folder_name_code(folder_code, folder, error_codes)
     _validate_name_content(name, folder, error_codes)
+    _validate_folder_name_code(folder_code, folder, error_codes)
     return error_codes
 
 
@@ -137,8 +145,8 @@ def _validate_folder_name_code(
     match = re.fullmatch(PATTERN_FOLDER_NAME, folder.parent.name)
     # check folder code against parent folder code
     if match is None:
-        pattern = re.compile(r"F\d+([a-z]*)")  # select letters from the folder code
-        letters = re.fullmatch(pattern, folder.name).group(1)
+        pattern = re.compile(r"_F\d+([a-z]*)")  # select letters from the folder code
+        letters = re.match(pattern, folder.name).group(1)
         if len(letters) != 0:
             error_codes["secondary"].append(101)
         return

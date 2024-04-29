@@ -1,5 +1,5 @@
 _FORBIDDEN_NAME_CHARACTERS: set[str] = {"-", "!", " ", "."}
-_USERCODE_LENGTH: list[int] = [3, 4]
+_USERCODE_LENGTH: list[int] = [3]
 
 ERRORS_CODES: dict[int, str] = {
     # pattern violations
@@ -11,5 +11,5 @@ ERRORS_CODES: dict[int, str] = {
     # file-specific violations
     21: "File date is in the future.",
     # secondary violation, depending on a primary violation
-    101: "File/Folder code could not be compared to invalid parent code.",
+    101: "File/Folder code could not be compared to invalid parent pattern.",
 }

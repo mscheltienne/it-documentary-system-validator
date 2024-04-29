@@ -5,6 +5,7 @@ from shutil import move
 from typing import TYPE_CHECKING
 
 import pytest
+
 from fcbg_ruff.validator import _parse_file_stem, _parse_folder_name, validate_folder
 
 if TYPE_CHECKING:
