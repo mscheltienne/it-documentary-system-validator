@@ -1,4 +1,5 @@
 import pytest
+
 from fcbg_ruff.utils._path import walk_files, walk_folders
 
 

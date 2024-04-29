@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from .._regex import (
+from fcbg_ruff.check._regex import (
     PATTERN_FILE_STEM,
     PATTERN_FOLDER_NAME,
     validate_file_name,
