@@ -13,8 +13,8 @@ if TYPE_CHECKING:
 
 
 PATTERN_USERCODE_STR: str = f"[A-Z]{','.join([str(i) for i in _USERCODE_LENGTH])}"
-PATTERN_FILE_STEM = re.compile(r"F\d+[a-z]*_\d{6}_.*_" + PATTERN_USERCODE_STR)
-PATTERN_FOLDER_NAME = re.compile(r"_F\d+[a-z]*_.*")
+PATTERN_FILE_STEM = re.compile(r"F\d+[a-z]*_\d{6}_.+_" + PATTERN_USERCODE_STR)
+PATTERN_FOLDER_NAME = re.compile(r"_F\d+[a-z]*_.+")
 
 
 def validate_file_name(fname: Path) -> dict[str, list[int]]:
