@@ -61,7 +61,7 @@ def _create_tree(folder: Path, code: str, depth: int) -> None:
 
 
 def _create_files(folder: Path, code: str) -> None:
-    """Create random files in the folder and in '__old'."""
+    """Create random files in the folder and in '__Old'."""
     n_files = random.randint(0, 4)
     if n_files == 0:
         return
@@ -72,8 +72,8 @@ def _create_files(folder: Path, code: str) -> None:
         if old and random.choice([True, True, False]):
             fname = _olderify_fname(fname)
             fname = _change_fname_usercode(fname)
-            (folder / "__old").mkdir(exist_ok=True)
-            (folder / "__old" / fname).with_suffix(".txt").write_text("101")
+            (folder / "__Old").mkdir(exist_ok=True)
+            (folder / "__Old" / fname).with_suffix(".txt").write_text("101")
 
 
 def _random_name() -> str:

@@ -44,7 +44,7 @@ def validate_folder(
                 for key in ("primary", "secondary"):
                     if len(errors[key]) != 0:
                         violations[key][elt] = errors[key]
-            elif elt.is_dir() and elt.name != "__old":
+            elif elt.is_dir() and elt.name.lower() != "__old":
                 folders.append(elt)
         # validate subfolders in parallel
         n_jobs = _ensure_n_jobs(n_jobs, len(folders))
@@ -73,7 +73,7 @@ def _validate_folder(
         if len(errors[key]) != 0:
             violations[key][folder] = errors[key]
     for elt in folder.iterdir():
-        if elt.is_dir() and elt.name == "__old":
+        if elt.is_dir() and elt.name.lower() == "__old":
             pass
         elif elt.is_dir():
             _validate_folder(elt, violations)

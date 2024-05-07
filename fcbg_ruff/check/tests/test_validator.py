@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 @pytest.fixture(scope="function")
 def folder_with_invalid_files(folder: Path) -> tuple[Path, list[Path]]:
     """Create a mock documentary structure with invalid file names."""
-    files = [elt for elt in walk_files(folder) if elt.parent.name != "__old"]
+    files = [elt for elt in walk_files(folder) if elt.parent.name.lower() != "__old"]
     invalid_files = random.sample(files, 4)
     # add a purely invalid fname
     invalid_files[0].rename(invalid_files[0].parent / "invalid_file_name")
