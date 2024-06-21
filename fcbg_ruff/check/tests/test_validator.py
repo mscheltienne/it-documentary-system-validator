@@ -48,6 +48,8 @@ def folder_with_invalid_files(folder: Path) -> tuple[Path, list[Path]]:
 def test_validate_folder(folder: Path, n_jobs: int):
     """Test validation of a documentary system tree."""
     for elt in folder.iterdir():
+        if elt.is_file():
+            continue
         violations = validate_folder(elt, n_jobs=n_jobs)
         assert len(violations["primary"]) == 0
         assert len(violations["secondary"]) == 0
@@ -60,6 +62,8 @@ def test_validate_invalid_folder(folder_with_invalid_files: Path, n_jobs: int):
     folder, invalid_files = folder_with_invalid_files
     violations = {"primary": dict(), "secondary": dict()}
     for elt in folder.iterdir():
+        if elt.is_file():
+            continue
         violations_ = validate_folder(elt, n_jobs=n_jobs)
         for key in ("primary", "secondary"):
             violations[key].update(violations_[key])

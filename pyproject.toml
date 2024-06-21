@@ -18,6 +18,7 @@ classifiers = [
   'Programming Language :: Python :: 3.12',
 ]
 dependencies = [
+  'click',
   'numpy>=1.21',
   'packaging',
   'psutil',
@@ -68,8 +69,7 @@ test = [
 ]
 
 [project.scripts]
-fcbg_ruff-check = 'fcbg_ruff.commands.check:run'
-fcbg_ruff-sys_info = 'fcbg_ruff.commands.sys_info:run'
+fcbg-ruff = 'fcbg_ruff.commands.main:run'
 
 [project.urls]
 source = 'https://github.com/fcbg-hnp-meeg/it-documentary-system-validator'
@@ -96,7 +96,6 @@ omit = [
   '**/__init__.py',
   '**/conftest.py',
   '**/fcbg_ruff/_version.py',
-  '**/fcbg_ruff/commands/*',
   '**/fcbg_ruff/utils/_fixes.py',
   '**/tests/**',
 ]
