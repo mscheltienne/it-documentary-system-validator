@@ -72,8 +72,8 @@ test = [
 fcbg-ruff = 'fcbg_ruff.commands.main:run'
 
 [project.urls]
-source = 'https://github.com/fcbg-hnp-meeg/it-documentary-system-validator'
-tracker = 'https://github.com/fcbg-hnp-meeg/it-documentary-system-validator/issues'
+source = 'https://github.com/fcbg-platforms/it-documentary-system-validator'
+tracker = 'https://github.com/fcbg-platforms/it-documentary-system-validator/issues'
 
 [tool.codespell]
 check-filenames = true
