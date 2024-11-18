@@ -26,7 +26,7 @@ def valid_file_stem() -> list[str]:
 @pytest.fixture(scope="session")
 def invalid_file_stem() -> list[str]:
     """Invalid file stems."""
-    # do not test with a whitespace 'F1a_101010_test test_ABC', as this is fitlered out
+    # do not test with a whitespace 'F1a_101010_test test_ABC', as this is filtered out
     # by the parser/validator
     return [
         "F1_101010_test_AB1",
@@ -47,7 +47,7 @@ def valid_folder_name() -> list[str]:
 @pytest.fixture(scope="session")
 def invalid_folder_name() -> list[str]:
     """Invalid file stems."""
-    # do not test with a whitespace '_F1a_test ere', as this is fitlered out by the
+    # do not test with a whitespace '_F1a_test ere', as this is filtered out by the
     # parser/validator
     return ["_G2a_test", "_F10abc", "_F1abc__", "F1_test"]
 
