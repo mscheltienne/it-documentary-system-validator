@@ -25,11 +25,11 @@ dependencies = [
 ]
 description = 'Template for python projects.'
 keywords = [
-  'python',
-  'it',
-  'validator',
   'filename',
+  'it',
+  'python',
   'regex',
+  'validator',
 ]
 license = {file = 'LICENSE'}
 maintainers = [
