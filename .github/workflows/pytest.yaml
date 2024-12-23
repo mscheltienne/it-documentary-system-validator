@@ -25,7 +25,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: astral-sh/setup-uv@v4
+      - uses: astral-sh/setup-uv@v5
       - run: uv pip install --quiet --system .[test]
       - run: fcbg-ruff sys-info --developer
       - run: pytest fcbg_ruff --cov=fcbg_ruff --cov-report=xml --cov-config=pyproject.toml
