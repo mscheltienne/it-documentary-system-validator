@@ -9,7 +9,7 @@ repos:
             files: fcbg_ruff
 
     - repo: https://github.com/astral-sh/ruff-pre-commit
-      rev: v0.4.1
+      rev: v0.8.6
       hooks:
           - id: ruff
             name: ruff linter
@@ -20,7 +20,7 @@ repos:
             files: fcbg_ruff
 
     - repo: https://github.com/codespell-project/codespell
-      rev: v2.2.6
+      rev: v2.3.0
       hooks:
           - id: codespell
             additional_dependencies: [tomli]
@@ -33,7 +33,7 @@ repos:
             additional_dependencies: [tomli]
 
     - repo: https://github.com/pappasam/toml-sort
-      rev: v0.23.1
+      rev: v0.24.2
       hooks:
           - id: toml-sort-fix
             files: pyproject.toml
